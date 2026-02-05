@@ -118,6 +118,16 @@ impl Default for AgentConfig {
                 "excel_filter".to_string(),
                 "excel_search".to_string(),
                 "excel_aggregate".to_string(),
+                // Video editing tools
+                "video_info".to_string(),
+                "video_extract_frames".to_string(),
+                "video_analyze_scene".to_string(),
+                "video_cut".to_string(),
+                "video_trim".to_string(),
+                "video_merge".to_string(),
+                "video_add_transition".to_string(),
+                // Claude Code integration
+                "trigger_claude_code".to_string(),
             ],
         }
     }
@@ -160,6 +170,31 @@ After outputting the plan, immediately begin executing each step. As you work th
 - `docker_run` - Run commands in Docker containers
 - `docker_list` - List running containers
 - `docker_images` - List available images
+
+## Video Editing Tools
+- `video_info` - Get video metadata (duration, resolution, fps, codec)
+- `video_extract_frames` - Extract frames at intervals for analysis
+- `video_analyze_scene` - Prepare frames for vision-based scene analysis
+- `video_cut` - Extract a segment from video (keep a portion)
+- `video_trim` - Remove a segment from video (delete a portion)
+- `video_merge` - Concatenate multiple videos
+- `video_add_transition` - Add fade in/out effects
+
+## Claude Code Integration
+- `trigger_claude_code` - Launch Claude Code CLI for tasks requiring:
+  - Cloud deployments (Vercel, Fly.io)
+  - OAuth authentication flows
+  - MCP server integrations
+  - Complex multi-step operations
+
+When users ask to deploy, authenticate with cloud services, or use MCP servers, use trigger_claude_code to hand off to Claude Code CLI which can handle interactive prompts and authentication.
+
+### Video Editing Workflow
+1. Use `video_info` to get video details
+2. Use `video_extract_frames` to get keyframes for analysis
+3. Plan your edits based on analysis
+4. Execute edits with `video_cut`, `video_trim`, `video_merge`, or `video_add_transition`
+5. Verify output with `video_info` on the result
 
 ## Docker Integration
 The project_path (if provided) is automatically mounted to /workspace in containers.

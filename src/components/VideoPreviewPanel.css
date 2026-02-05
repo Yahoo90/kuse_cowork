@@ -1,0 +1,431 @@
+/* Three-panel layout */
+.video-editor-layout {
+  display: flex;
+  height: 100%;
+  background: var(--bg-secondary, #1a1a2e);
+  overflow: hidden;
+}
+
+.editor-left-panel {
+  width: 220px;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.editor-center-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.editor-right-panel {
+  width: 280px;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.video-preview-panel {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  background: var(--bg-secondary, #1a1a2e);
+  overflow: hidden;
+}
+
+/* Empty State */
+.video-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 2rem;
+  text-align: center;
+  color: var(--text-secondary, #888);
+}
+
+.video-empty-state .empty-icon {
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+.video-empty-state h3 {
+  margin: 0 0 0.5rem 0;
+  color: var(--text-primary, #fff);
+  font-size: 1.25rem;
+}
+
+.video-empty-state p {
+  margin: 0 0 1.5rem 0;
+  font-size: 0.875rem;
+}
+
+/* Header */
+.video-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  background: var(--bg-tertiary, #16213e);
+  border-bottom: 1px solid var(--border-color, #333);
+}
+
+.video-title {
+  font-weight: 500;
+  color: var(--text-primary, #fff);
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.video-meta {
+  font-size: 0.75rem;
+  color: var(--text-secondary, #888);
+}
+
+/* Video Container */
+.video-container {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.video-container video {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.video-processing-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  background: rgba(0, 0, 0, 0.8);
+  color: var(--text-primary, #fff);
+}
+
+.processing-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--border-color, #333);
+  border-top-color: var(--accent-color, #3b82f6);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Controls */
+.video-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  background: var(--bg-tertiary, #16213e);
+  border-bottom: 1px solid var(--border-color, #333);
+}
+
+.btn-control {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: var(--bg-primary, #0f0f23);
+  border: 1px solid var(--border-color, #333);
+  border-radius: 6px;
+  color: var(--text-primary, #fff);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-control:hover {
+  background: var(--accent-color, #3b82f6);
+  border-color: var(--accent-color, #3b82f6);
+}
+
+.time-display {
+  font-family: monospace;
+  font-size: 0.875rem;
+  color: var(--text-secondary, #888);
+}
+
+.current-time {
+  color: var(--text-primary, #fff);
+}
+
+.time-separator {
+  margin: 0 0.25rem;
+}
+
+.playback-rate select {
+  background: var(--bg-primary, #0f0f23);
+  border: 1px solid var(--border-color, #333);
+  border-radius: 4px;
+  color: var(--text-primary, #fff);
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+.volume-control {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-secondary, #888);
+}
+
+.volume-control input[type="range"] {
+  width: 80px;
+  height: 4px;
+  accent-color: var(--accent-color, #3b82f6);
+}
+
+/* Timeline */
+.timeline-container {
+  padding: 0.75rem 1rem;
+  background: var(--bg-tertiary, #16213e);
+}
+
+.timeline {
+  position: relative;
+  height: 24px;
+  background: var(--bg-primary, #0f0f23);
+  border-radius: 4px;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.timeline-progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: rgba(59, 130, 246, 0.3);
+  pointer-events: none;
+}
+
+.timeline-playhead {
+  position: absolute;
+  top: 0;
+  width: 2px;
+  height: 100%;
+  background: var(--accent-color, #3b82f6);
+  pointer-events: none;
+  z-index: 10;
+}
+
+.timeline-selection {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  background: rgba(34, 197, 94, 0.2);
+  border-left: 2px solid #22c55e;
+  border-right: 2px solid #ef4444;
+  pointer-events: none;
+}
+
+.timeline-marker {
+  position: absolute;
+  top: 2px;
+  width: 8px;
+  height: 20px;
+  border-radius: 2px;
+  cursor: pointer;
+  opacity: 0.8;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  z-index: 5;
+}
+
+.timeline-marker:hover {
+  opacity: 1;
+  transform: scaleY(1.1);
+}
+
+.marker-scene {
+  width: 4px;
+}
+
+.marker-in_point,
+.marker-out_point {
+  width: 6px;
+}
+
+.marker-edit {
+  width: 3px;
+  opacity: 0.6;
+}
+
+/* Edit Controls */
+.edit-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  background: var(--bg-secondary, #1a1a2e);
+  border-top: 1px solid var(--border-color, #333);
+  flex-wrap: wrap;
+}
+
+.edit-group {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn-edit {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--bg-primary, #0f0f23);
+  border: 1px solid var(--border-color, #333);
+  border-radius: 6px;
+  color: var(--text-primary, #fff);
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-edit:hover:not(:disabled) {
+  background: var(--bg-tertiary, #16213e);
+  border-color: var(--accent-color, #3b82f6);
+}
+
+.btn-edit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.selection-info {
+  font-size: 0.75rem;
+  color: var(--text-secondary, #888);
+  padding: 0.375rem 0.75rem;
+  background: var(--bg-primary, #0f0f23);
+  border-radius: 4px;
+}
+
+/* Edit Plan Panel */
+.edit-plan-panel {
+  padding: 0.75rem 1rem;
+  background: var(--bg-tertiary, #16213e);
+  border-top: 1px solid var(--border-color, #333);
+}
+
+.edit-plan-panel h4 {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.875rem;
+  color: var(--text-primary, #fff);
+}
+
+.plan-status {
+  font-size: 0.75rem;
+  color: var(--text-secondary, #888);
+  margin-bottom: 0.5rem;
+}
+
+.plan-operations {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.plan-operation {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0.5rem;
+  background: var(--bg-primary, #0f0f23);
+  border-radius: 4px;
+  font-size: 0.75rem;
+}
+
+.plan-operation.current {
+  background: rgba(59, 130, 246, 0.2);
+  border: 1px solid var(--accent-color, #3b82f6);
+}
+
+.plan-operation.done {
+  opacity: 0.5;
+}
+
+.plan-operation .op-number {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-tertiary, #16213e);
+  border-radius: 50%;
+  font-size: 0.625rem;
+}
+
+.plan-operation.done .op-number {
+  background: #22c55e;
+  color: #fff;
+}
+
+.plan-operation .op-type {
+  font-weight: 500;
+  color: var(--text-primary, #fff);
+  text-transform: capitalize;
+}
+
+.plan-operation .op-time {
+  color: var(--text-secondary, #888);
+  margin-left: auto;
+}
+
+/* Buttons */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: var(--accent-color, #3b82f6);
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-primary:hover {
+  background: #2563eb;
+}
+
+.btn-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  color: var(--text-secondary, #888);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-icon:hover {
+  background: var(--bg-primary, #0f0f23);
+  color: var(--text-primary, #fff);
+}

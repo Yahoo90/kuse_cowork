@@ -6,6 +6,7 @@ use crate::capture::{
     CreateSourceLinkInput, SourceLinkWithSources, CaptureConfig, BatchInsertResult,
     SourceType, hash_content, generate_preview, PREVIEW_LENGTH, ANSWER_PREVIEW_LENGTH,
 };
+use crate::claude_code::{ClaudeCodeManager, ClaudeCodeRequest, ClaudeCodeResponse, ClaudeCodeStatus};
 use crate::claude::{ClaudeClient, Message as ClaudeMessage};
 use crate::database::{Conversation, DataPanel, Database, Message, PlanStep, Settings, Task, TaskMessage};
 use crate::docs::{Document, CreateDocumentInput, UpdateDocumentInput};
@@ -29,6 +30,7 @@ pub struct AppState {
     pub capture_buffer: Arc<CaptureBuffer>,
     pub source_tracker: Arc<ActiveSourceTracker>,
     pub clipboard_monitor: Arc<ClipboardMonitor>,
+    pub claude_code_manager: Arc<ClaudeCodeManager>,
 }
 
 #[derive(Debug, Serialize)]
@@ -2956,4 +2958,80 @@ pub async fn export_and_clear_captures(
     state.db.clear_all_captures()?;
 
     Ok(file_path.to_string_lossy().to_string())
+}
+
+// ==================== Video Editing Commands ====================
+
+use crate::tools::video;
+
+/// Execute a video editing tool
+#[command]
+pub async fn execute_video_tool(
+    tool_name: String,
+    input: serde_json::Value,
+) -> Result<String, CommandError> {
+    use crate::agent::ToolUse;
+
+    let tool_use = ToolUse {
+        id: uuid::Uuid::new_v4().to_string(),
+        name: tool_name,
+        input,
+        thought_signature: None,
+    };
+
+    let result = video::execute_video_tool(&tool_use, &None);
+
+    if result.is_error.is_some() {
+        Err(CommandError {
+            message: result.content,
+        })
+    } else {
+        Ok(result.content)
+    }
+}
+
+// Claude Code CLI commands
+#[command]
+pub async fn start_claude_code(
+    window: Window,
+    state: State<'_, Arc<AppState>>,
+    request: ClaudeCodeRequest,
+) -> Result<String, CommandError> {
+    let app_handle = window.app_handle().clone();
+
+    state
+        .claude_code_manager
+        .start_session(app_handle, request)
+        .await
+        .map_err(|e| CommandError { message: e })
+}
+
+#[command]
+pub async fn respond_claude_code(
+    state: State<'_, Arc<AppState>>,
+    response: ClaudeCodeResponse,
+) -> Result<(), CommandError> {
+    state
+        .claude_code_manager
+        .respond(response)
+        .await
+        .map_err(|e| CommandError { message: e })
+}
+
+#[command]
+pub async fn cancel_claude_code(
+    state: State<'_, Arc<AppState>>,
+) -> Result<(), CommandError> {
+    state
+        .claude_code_manager
+        .cancel()
+        .await
+        .map_err(|e| CommandError { message: e })
+}
+
+#[command]
+pub async fn get_claude_code_status(
+    state: State<'_, Arc<AppState>>,
+) -> Result<ClaudeCodeStatus, CommandError> {
+    Ok(state.claude_code_manager.get_status().await)
 }

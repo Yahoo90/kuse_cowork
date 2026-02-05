@@ -1,0 +1,245 @@
+.sequence-timeline {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-secondary, #1a1a2e);
+  border-top: 1px solid var(--border-color, #333);
+}
+
+.timeline-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--border-color, #333);
+}
+
+.timeline-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.timeline-title h3 {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-primary, #fff);
+}
+
+.timeline-duration {
+  font-size: 0.75rem;
+  color: var(--text-secondary, #888);
+  font-family: monospace;
+}
+
+.timeline-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn-clear {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.5rem;
+  background: transparent;
+  border: 1px solid var(--border-color, #333);
+  border-radius: 4px;
+  color: var(--text-secondary, #888);
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-clear:hover {
+  background: #ef4444;
+  border-color: #ef4444;
+  color: #fff;
+}
+
+.timeline-scroll-container {
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.timeline-ruler {
+  position: relative;
+  height: 24px;
+  background: var(--bg-tertiary, #16213e);
+  border-bottom: 1px solid var(--border-color, #333);
+  min-width: 100%;
+}
+
+.ruler-mark {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  border-left: 1px solid var(--border-color, #444);
+}
+
+.ruler-label {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  font-size: 0.625rem;
+  color: var(--text-secondary, #888);
+  font-family: monospace;
+}
+
+.timeline-track-container {
+  position: relative;
+  min-height: 80px;
+  background: var(--bg-primary, #0f0f23);
+  cursor: pointer;
+}
+
+.timeline-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 80px;
+  color: var(--text-secondary, #888);
+  text-align: center;
+}
+
+.timeline-empty p {
+  margin: 0.125rem 0;
+  font-size: 0.75rem;
+}
+
+.timeline-empty .hint {
+  font-size: 0.625rem;
+  opacity: 0.7;
+}
+
+.timeline-track {
+  position: relative;
+  margin: 16px 0;
+}
+
+.timeline-clip {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  border-radius: 4px;
+  cursor: grab;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  overflow: hidden;
+}
+
+.timeline-clip:hover {
+  transform: scaleY(1.05);
+}
+
+.timeline-clip.selected {
+  box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--accent-color, #3b82f6);
+}
+
+.timeline-clip.dragging {
+  opacity: 0.5;
+  cursor: grabbing;
+}
+
+.clip-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+  padding: 0 0.5rem;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.clip-name {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.clip-duration {
+  font-size: 0.5625rem;
+  opacity: 0.8;
+  font-family: monospace;
+}
+
+.clip-remove {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.5);
+  border: none;
+  border-radius: 3px;
+  color: #fff;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.timeline-clip:hover .clip-remove {
+  opacity: 1;
+}
+
+.clip-remove:hover {
+  background: #ef4444;
+}
+
+.drop-indicator {
+  position: absolute;
+  top: 0;
+  width: 3px;
+  height: 100%;
+  background: var(--accent-color, #3b82f6);
+  border-radius: 2px;
+  z-index: 10;
+}
+
+.timeline-playhead {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  z-index: 20;
+  pointer-events: none;
+}
+
+.playhead-head {
+  width: 12px;
+  height: 10px;
+  background: #ef4444;
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  margin-left: -6px;
+}
+
+.playhead-line {
+  width: 2px;
+  background: #ef4444;
+  margin-left: -1px;
+}
+
+.clip-info-bar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--bg-tertiary, #16213e);
+  border-top: 1px solid var(--border-color, #333);
+  font-size: 0.75rem;
+}
+
+.clip-info-name {
+  color: var(--text-primary, #fff);
+  font-weight: 500;
+}
+
+.clip-info-source,
+.clip-info-timeline {
+  color: var(--text-secondary, #888);
+  font-family: monospace;
+}

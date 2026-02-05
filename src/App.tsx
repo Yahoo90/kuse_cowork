@@ -14,6 +14,8 @@ import WorkStreamPanel from "./components/WorkStreamPanel";
 import DocEditor from "./components/DocEditor";
 import ChatWidget from "./components/ChatWidget";
 import DataPanelsDock from "./components/DataPanels/DataPanelsDock";
+import VideoPreviewPanel from "./components/VideoPreviewPanel";
+import ClaudeCodePanel, { ClaudeCodeTriggerData } from "./components/ClaudeCodePanel";
 import ResizablePanels from "./components/ResizablePanels";
 import { showDataPanels, setShowDataPanels, loadPanelState } from "./stores/dataPanels";
 import { useDocs } from "./stores/docs";
@@ -36,7 +38,10 @@ const App: Component = () => {
   const [showBrowserPanel, setShowBrowserPanel] = createSignal(false);
   const [showActivityPanel, setShowActivityPanel] = createSignal(false);
   const [showDocEditor, setShowDocEditor] = createSignal(false);
+  const [showVideoPanel, setShowVideoPanel] = createSignal(false);
+  const [showClaudeCode, setShowClaudeCode] = createSignal(false);
   const [activeDocId, setActiveDocId] = createSignal<string | null>(null);
+  const [claudeCodeTrigger, setClaudeCodeTrigger] = createSignal<ClaudeCodeTriggerData | null>(null);
 
   // WorkStream tool tracking
   const { trackToolStart, trackToolEnd } = createToolTracker();
@@ -71,6 +76,8 @@ const App: Component = () => {
     setShowDocEditor(false);
     setActiveDocId(null);
     setShowDataPanels(false);
+    setShowVideoPanel(false);
+    setShowClaudeCode(false);
   };
 
   const toggleMCP = () => {
@@ -83,6 +90,8 @@ const App: Component = () => {
     setShowDocEditor(false);
     setActiveDocId(null);
     setShowDataPanels(false);
+    setShowVideoPanel(false);
+    setShowClaudeCode(false);
   };
 
   const handleToggleSettings = () => {
@@ -92,6 +101,8 @@ const App: Component = () => {
     setShowDocEditor(false);
     setActiveDocId(null);
     setShowDataPanels(false);
+    setShowVideoPanel(false);
+    setShowClaudeCode(false);
     toggleSettings();
   };
 
@@ -102,6 +113,8 @@ const App: Component = () => {
       // Close other main panel views
       setShowDocEditor(false);
       setActiveDocId(null);
+      setShowVideoPanel(false);
+      setShowClaudeCode(false);
       if (showSettings()) toggleSettings();
       setShowSkills(false);
       setShowMCP(false);
@@ -137,6 +150,8 @@ const App: Component = () => {
     if (newState) {
       // Close other main panel views
       setShowDataPanels(false);
+      setShowVideoPanel(false);
+      setShowClaudeCode(false);
       if (showSettings()) toggleSettings();
       setShowSkills(false);
       setShowMCP(false);
@@ -145,11 +160,46 @@ const App: Component = () => {
     }
   };
 
+  const toggleVideoPanel = () => {
+    const newState = !showVideoPanel();
+    setShowVideoPanel(newState);
+    if (newState) {
+      // Close other main panel views
+      setShowDataPanels(false);
+      setShowDocEditor(false);
+      setActiveDocId(null);
+      setShowClaudeCode(false);
+      if (showSettings()) toggleSettings();
+      setShowSkills(false);
+      setShowMCP(false);
+    }
+  };
+
+  const toggleClaudeCode = () => {
+    const newState = !showClaudeCode();
+    setShowClaudeCode(newState);
+    if (newState) {
+      // Close other main panel views
+      setShowDataPanels(false);
+      setShowDocEditor(false);
+      setActiveDocId(null);
+      setShowVideoPanel(false);
+      if (showSettings()) toggleSettings();
+      setShowSkills(false);
+      setShowMCP(false);
+    } else {
+      // Clear trigger when closing
+      setClaudeCodeTrigger(null);
+    }
+  };
+
   const handleSelectDoc = async (doc: Document) => {
     setActiveDocId(doc.id);
     setShowDocEditor(true);
     // Close other main panel views
     setShowDataPanels(false);
+    setShowVideoPanel(false);
+    setShowClaudeCode(false);
     if (showSettings()) toggleSettings();
     setShowSkills(false);
     setShowMCP(false);
@@ -270,6 +320,32 @@ const App: Component = () => {
         });
         // Log activity event for tool end
         trackToolEnd(event.tool, event.result?.slice(0, 100), event.success);
+
+        // Check if this is a Claude Code trigger
+        if (event.tool === "trigger_claude_code" && event.success && event.result) {
+          try {
+            const triggerData = JSON.parse(event.result);
+            if (triggerData.__claude_code_trigger__) {
+              // Open Claude Code panel with the trigger data
+              setClaudeCodeTrigger({
+                prompt: triggerData.prompt,
+                working_directory: triggerData.working_directory,
+                mcp_servers: triggerData.mcp_servers,
+              });
+              setShowClaudeCode(true);
+              // Close other panels
+              setShowDataPanels(false);
+              setShowDocEditor(false);
+              setActiveDocId(null);
+              setShowVideoPanel(false);
+              if (showSettings()) toggleSettings();
+              setShowSkills(false);
+              setShowMCP(false);
+            }
+          } catch (e) {
+            console.error("Failed to parse Claude Code trigger:", e);
+          }
+        }
         break;
       case "done":
         setActiveTask((prev) => {
@@ -409,12 +485,16 @@ const App: Component = () => {
           onBrowserClick={toggleBrowserPanel}
           onActivityClick={toggleActivityPanel}
           onDocClick={toggleDocEditor}
+          onVideoClick={toggleVideoPanel}
+          onClaudeCodeClick={toggleClaudeCode}
           onSelectDoc={handleSelectDoc}
           showDataPanels={showDataPanels()}
           showCapturePanel={showCapturePanel()}
           showBrowserPanel={showBrowserPanel()}
           showActivityPanel={showActivityPanel()}
           showDocEditor={showDocEditor()}
+          showVideoPanel={showVideoPanel()}
+          showClaudeCode={showClaudeCode()}
           activeDocId={activeDocId()}
         />
         <ResizablePanels
@@ -444,7 +524,24 @@ const App: Component = () => {
               <Show when={showDataPanels()}>
                 <DataPanelsDock />
               </Show>
-              <Show when={!showSettings() && !showSkills() && !showMCP() && !showDocEditor() && !showDataPanels()}>
+              <Show when={showVideoPanel()}>
+                <VideoPreviewPanel />
+              </Show>
+              <Show when={showClaudeCode()}>
+                <ClaudeCodePanel
+                  onClose={() => {
+                    setShowClaudeCode(false);
+                    setClaudeCodeTrigger(null);
+                  }}
+                  triggerData={claudeCodeTrigger()}
+                  onSessionComplete={(result) => {
+                    console.log("Claude Code session completed:", result);
+                    // Clear trigger after completion
+                    setClaudeCodeTrigger(null);
+                  }}
+                />
+              </Show>
+              <Show when={!showSettings() && !showSkills() && !showMCP() && !showDocEditor() && !showDataPanels() && !showVideoPanel() && !showClaudeCode()}>
                 <AgentMain
                   onNewTask={handleNewTask}
                   onContinueTask={handleContinueTask}
@@ -500,7 +597,7 @@ const App: Component = () => {
                   />
                 </Show>
               </div>
-              <Show when={showDocEditor() || showDataPanels()}>
+              <Show when={showDocEditor() || showDataPanels() || showVideoPanel() || showClaudeCode()}>
                 <div style={{ height: "400px", "flex-shrink": 0 }}>
                   <ChatWidget
                     messages={taskMessages()}

@@ -67,3 +67,5 @@ coverage/
 *.tmp
 *.temp
 .cache/
+
+temp_resource/

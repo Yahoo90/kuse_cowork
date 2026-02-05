@@ -1,4 +1,5 @@
 pub mod bash;
+pub mod claude_code;
 pub mod docker;
 pub mod excel;
 pub mod file_edit;
@@ -7,6 +8,7 @@ pub mod file_write;
 pub mod glob;
 pub mod grep;
 pub mod list_dir;
+pub mod video;
 
 use crate::agent::ToolDefinition;
 
@@ -20,6 +22,7 @@ pub fn get_all_tools() -> Vec<ToolDefinition> {
         glob::definition(),
         grep::definition(),
         list_dir::definition(),
+        claude_code::definition(),
     ];
 
     // Add Docker tools
@@ -27,6 +30,9 @@ pub fn get_all_tools() -> Vec<ToolDefinition> {
 
     // Add Excel query tools
     tools.extend(excel::get_excel_tools());
+
+    // Add Video editing tools
+    tools.extend(video::get_video_tools());
 
     tools
 }

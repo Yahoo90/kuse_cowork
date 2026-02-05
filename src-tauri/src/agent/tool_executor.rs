@@ -97,6 +97,11 @@ impl ToolExecutor {
             return tools::docker::execute_docker_tool(tool_use, &self.project_path);
         }
 
+        // Video tools have their own result handling
+        if tool_use.name.starts_with("video_") {
+            return tools::video::execute_video_tool(tool_use, &self.project_path);
+        }
+
         let result = match tool_use.name.as_str() {
             "read_file" => tools::file_read::execute(&tool_use.input, project_path),
             "write_file" => tools::file_write::execute(&tool_use.input, project_path),
@@ -108,6 +113,7 @@ impl ToolExecutor {
             "excel_filter" => execute_excel_tool(&tool_use.input, "filter"),
             "excel_search" => execute_excel_tool(&tool_use.input, "search"),
             "excel_aggregate" => execute_excel_tool(&tool_use.input, "aggregate"),
+            "trigger_claude_code" => tools::claude_code::execute(&tool_use.input, project_path),
             _ => Err(format!("Unknown tool: {}", tool_use.name)),
         };
 

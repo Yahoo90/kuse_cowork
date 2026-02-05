@@ -16,12 +16,16 @@ interface TaskSidebarProps {
   onBrowserClick: () => void;
   onActivityClick: () => void;
   onDocClick: () => void;
+  onVideoClick: () => void;
+  onClaudeCodeClick: () => void;
   onSelectDoc: (doc: Document) => void;
   showDataPanels: boolean;
   showCapturePanel: boolean;
   showBrowserPanel: boolean;
   showActivityPanel: boolean;
   showDocEditor: boolean;
+  showVideoPanel: boolean;
+  showClaudeCode: boolean;
   activeDocId: string | null;
 }
 
@@ -126,6 +130,17 @@ const TaskSidebar: Component<TaskSidebarProps> = (props) => {
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="12" cy="12" r="3" />
         <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+      </svg>
+    ),
+    Video: () => (
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+      </svg>
+    ),
+    ClaudeCode: () => (
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="16 18 22 12 16 6" />
+        <polyline points="8 6 2 12 8 18" />
       </svg>
     )
   };
@@ -253,6 +268,20 @@ const TaskSidebar: Component<TaskSidebarProps> = (props) => {
           >
             <span class="nav-icon"><SidebarIcons.Data /></span>
             <span class="nav-label">Data</span>
+          </button>
+          <button
+            class={`nav-item ${props.showVideoPanel ? "active" : ""}`}
+            onClick={props.onVideoClick}
+          >
+            <span class="nav-icon"><SidebarIcons.Video /></span>
+            <span class="nav-label">Video</span>
+          </button>
+          <button
+            class={`nav-item ${props.showClaudeCode ? "active" : ""}`}
+            onClick={props.onClaudeCodeClick}
+          >
+            <span class="nav-icon"><SidebarIcons.ClaudeCode /></span>
+            <span class="nav-label">Claude</span>
           </button>
         </div>
 

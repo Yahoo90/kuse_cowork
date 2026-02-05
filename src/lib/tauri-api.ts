@@ -1264,3 +1264,186 @@ export async function compressOldWorkBlocks(beforeTimestamp: number): Promise<nu
   }
   return invoke<number>("compress_old_work_blocks", { beforeTimestamp });
 }
+
+// ==================== Video Editing API ====================
+
+import type {
+  VideoInfo,
+  ExtractedFrame,
+  EditOperation,
+} from "../types/video";
+
+/**
+ * Get video information (duration, resolution, fps, codec, etc.)
+ */
+export async function getVideoInfo(path: string): Promise<VideoInfo> {
+  if (!isTauri()) {
+    throw new Error("Video editing requires the desktop app");
+  }
+  const result = await invoke<string>("execute_video_tool", {
+    toolName: "video_info",
+    input: { path },
+  });
+  return JSON.parse(result);
+}
+
+/**
+ * Extract frames from a video at regular intervals
+ */
+export async function extractVideoFrames(
+  path: string,
+  intervalSeconds: number = 5,
+  maxFrames: number = 10,
+  includeBase64: boolean = false
+): Promise<ExtractedFrame[]> {
+  if (!isTauri()) {
+    throw new Error("Video editing requires the desktop app");
+  }
+  const result = await invoke<string>("execute_video_tool", {
+    toolName: "video_extract_frames",
+    input: {
+      path,
+      interval_seconds: intervalSeconds,
+      max_frames: maxFrames,
+      include_base64: includeBase64,
+    },
+  });
+  return JSON.parse(result);
+}
+
+/**
+ * Cut a segment from a video
+ */
+export async function cutVideo(
+  path: string,
+  startTime: number,
+  endTime: number,
+  outputPath?: string
+): Promise<{ success: boolean; output_path: string }> {
+  if (!isTauri()) {
+    throw new Error("Video editing requires the desktop app");
+  }
+  const result = await invoke<string>("execute_video_tool", {
+    toolName: "video_cut",
+    input: {
+      path,
+      start_time: startTime,
+      end_time: endTime,
+      output_path: outputPath,
+    },
+  });
+  return JSON.parse(result);
+}
+
+/**
+ * Trim (remove) a segment from a video
+ */
+export async function trimVideo(
+  path: string,
+  startTime: number,
+  endTime: number,
+  outputPath?: string
+): Promise<{ success: boolean; output_path: string }> {
+  if (!isTauri()) {
+    throw new Error("Video editing requires the desktop app");
+  }
+  const result = await invoke<string>("execute_video_tool", {
+    toolName: "video_trim",
+    input: {
+      path,
+      start_time: startTime,
+      end_time: endTime,
+      output_path: outputPath,
+    },
+  });
+  return JSON.parse(result);
+}
+
+/**
+ * Merge multiple videos into one
+ */
+export async function mergeVideos(
+  paths: string[],
+  outputPath: string
+): Promise<{ success: boolean; output_path: string }> {
+  if (!isTauri()) {
+    throw new Error("Video editing requires the desktop app");
+  }
+  const result = await invoke<string>("execute_video_tool", {
+    toolName: "video_merge",
+    input: {
+      paths,
+      output_path: outputPath,
+    },
+  });
+  return JSON.parse(result);
+}
+
+/**
+ * Add transition effect to a video
+ */
+export async function addVideoTransition(
+  path: string,
+  transitionType: "fade_in" | "fade_out" | "fade_both",
+  duration: number = 1.0,
+  outputPath?: string
+): Promise<{ success: boolean; output_path: string }> {
+  if (!isTauri()) {
+    throw new Error("Video editing requires the desktop app");
+  }
+  const result = await invoke<string>("execute_video_tool", {
+    toolName: "video_add_transition",
+    input: {
+      path,
+      transition_type: transitionType,
+      duration,
+      output_path: outputPath,
+    },
+  });
+  return JSON.parse(result);
+}
+
+/**
+ * Execute a video edit operation
+ */
+export async function executeVideoEdit(edit: EditOperation): Promise<string> {
+  if (!isTauri()) {
+    throw new Error("Video editing requires the desktop app");
+  }
+
+  switch (edit.type) {
+    case "cut":
+      const cutResult = await cutVideo(
+        edit.input_path,
+        edit.start_time!,
+        edit.end_time!,
+        edit.output_path
+      );
+      return cutResult.output_path;
+
+    case "trim":
+      const trimResult = await trimVideo(
+        edit.input_path,
+        edit.start_time!,
+        edit.end_time!,
+        edit.output_path
+      );
+      return trimResult.output_path;
+
+    case "merge":
+      const mergeResult = await mergeVideos(edit.paths!, edit.output_path!);
+      return mergeResult.output_path;
+
+    case "transition":
+      const transitionResult = await addVideoTransition(
+        edit.input_path,
+        edit.transition_type!,
+        edit.duration,
+        edit.output_path
+      );
+      return transitionResult.output_path;
+
+    default:
+      throw new Error(`Unknown edit type: ${edit.type}`);
+  }
+}

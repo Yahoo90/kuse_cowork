@@ -1,6 +1,7 @@
 mod agent;
 mod capture;
 mod claude;
+mod claude_code;
 mod commands;
 mod database;
 mod docs;
@@ -13,6 +14,7 @@ mod trace;
 mod workstream;
 
 use capture::{CaptureBuffer, ActiveSourceTracker, ClipboardMonitor, CaptureConfig};
+use claude_code::ClaudeCodeManager;
 use commands::AppState;
 use mcp::MCPManager;
 use std::sync::Arc;
@@ -56,6 +58,9 @@ pub fn run() {
 
     // Auto-connect enabled MCP servers will be done in the tauri app setup
 
+    // Initialize Claude Code manager
+    let claude_code_manager = Arc::new(ClaudeCodeManager::new());
+
     let app_state = Arc::new(AppState {
         db: db_arc,
         claude_client: Mutex::new(None),
@@ -64,6 +69,7 @@ pub fn run() {
         capture_buffer,
         source_tracker,
         clipboard_monitor,
+        claude_code_manager,
     });
 
     tauri::Builder::default()
@@ -175,6 +181,13 @@ pub fn run() {
             commands::capture_doc_edit,
             commands::get_recent_doc_edit,
             commands::export_and_clear_captures,
+            // Video editing commands
+            commands::execute_video_tool,
+            // Claude Code CLI commands
+            commands::start_claude_code,
+            commands::respond_claude_code,
+            commands::cancel_claude_code,
+            commands::get_claude_code_status,
         ])
         .setup(|app| {
             #[cfg(debug_assertions)]

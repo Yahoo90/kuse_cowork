@@ -51,5 +51,14 @@ umya-spreadsheet = "1.2"    # Excel writing with formula preservation
 notify = "6.1"              # File system watching
 sha2 = "0.10"               # Checksum computation
 
+# Video editing support
+base64 = "0.22"             # Frame encoding for vision analysis
+tempfile = "3.10"           # Temp file management for frame extraction
+image = "0.25"              # Image processing for frame extraction
+
+# Claude Code CLI integration
+portable-pty = "0.8"        # PTY for interactive CLI spawning
+strip-ansi-escapes = "0.2"  # Clean terminal output
+
 [target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
 tauri-plugin-shell = "2"
