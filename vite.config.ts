@@ -10,7 +10,8 @@ export default defineConfig({
   },
   envPrefix: ["VITE_", "TAURI_"],
   build: {
-    target: process.env.TAURI_PLATFORM === "windows" ? "chrome105" : "safari13",
+    // Keep a modern JS target for non-Windows WebViews to avoid esbuild downlevel edge cases.
+    target: process.env.TAURI_PLATFORM === "windows" ? "chrome105" : "es2022",
     minify: !process.env.TAURI_DEBUG ? "esbuild" : false,
     sourcemap: !!process.env.TAURI_DEBUG,
   },

@@ -1,4 +1,4 @@
-import { Component, Show, createSignal, onMount } from "solid-js";
+import { Component, Show, createSignal, createEffect, onMount } from "solid-js";
 import { useSettings, loadSettings } from "./stores/settings";
 import { Task, TaskMessage, AgentEvent, listTasks, createTask, deleteTask, runTaskAgent, getTask, getTaskMessages } from "./lib/tauri-api";
 import AgentMain from "./components/AgentMain";
@@ -14,6 +14,9 @@ interface ToolExecution {
   status: "running" | "completed" | "error";
 }
 
+type Theme = "light" | "dark";
+const THEME_STORAGE_KEY = "kuse-theme";
+
 const App: Component = () => {
   const { showSettings, toggleSettings, isLoading } = useSettings();
 
@@ -28,11 +31,29 @@ const App: Component = () => {
   const [isRunning, setIsRunning] = createSignal(false);
   const [toolExecutions, setToolExecutions] = createSignal<ToolExecution[]>([]);
   const [currentText, setCurrentText] = createSignal("");
+  const [theme, setTheme] = createSignal<Theme>("light");
 
   onMount(async () => {
+    const storedTheme = localStorage.getItem(THEME_STORAGE_KEY);
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const initialTheme: Theme = storedTheme === "dark" || storedTheme === "light"
+      ? storedTheme
+      : (prefersDark ? "dark" : "light");
+    setTheme(initialTheme);
+
     await loadSettings();
     await refreshTasks();
   });
+
+  createEffect(() => {
+    const currentTheme = theme();
+    document.documentElement.setAttribute("data-theme", currentTheme);
+    localStorage.setItem(THEME_STORAGE_KEY, currentTheme);
+  });
+
+  const toggleTheme = () => {
+    setTheme((current) => (current === "dark" ? "light" : "dark"));
+  };
 
   const toggleSkills = () => {
     setShowSkills(!showSkills());
@@ -279,6 +300,8 @@ const App: Component = () => {
           onSettingsClick={handleToggleSettings}
           onSkillsClick={toggleSkills}
           onMCPClick={toggleMCP}
+          theme={theme()}
+          onThemeToggle={toggleTheme}
         />
         <main class="main-content">
           <Show when={showSettings()}>

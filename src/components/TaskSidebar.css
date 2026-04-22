@@ -206,3 +206,13 @@
   background: var(--primary);
   opacity: 0.9;
 }
+
+.theme-toggle-btn {
+  background: var(--secondary);
+  color: var(--secondary-foreground);
+  border-color: var(--border);
+}
+
+.theme-toggle-btn:hover {
+  background: var(--accent);
+}

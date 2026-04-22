@@ -10,6 +10,8 @@ interface TaskSidebarProps {
   onSettingsClick: () => void;
   onSkillsClick: () => void;
   onMCPClick: () => void;
+  theme: "light" | "dark";
+  onThemeToggle: () => void;
 }
 
 const TaskSidebar: Component<TaskSidebarProps> = (props) => {
@@ -105,6 +107,9 @@ const TaskSidebar: Component<TaskSidebarProps> = (props) => {
         </button>
         <button class="footer-btn primary-btn" onClick={props.onSettingsClick}>
           Settings
+        </button>
+        <button class="footer-btn theme-toggle-btn" onClick={props.onThemeToggle}>
+          {props.theme === "dark" ? "Light Theme" : "Dark Theme"}
         </button>
       </div>
     </aside>
